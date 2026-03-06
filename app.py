@@ -14,7 +14,7 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 html, body, [class*="st-"] { font-family: 'DM Sans', sans-serif; }
-.block-container { padding-top: 1.2rem; padding-bottom: 0.5rem; }
+.block-container { padding-top: 2.5rem; padding-bottom: 0.5rem; }
 h1 { font-weight: 900 !important; letter-spacing: -1px; }
 h2, h3 { font-weight: 800 !important; letter-spacing: -0.5px; }
 div[data-testid="stMetric"] {
@@ -484,9 +484,10 @@ with tab4:
     st.markdown("#### 📋 Segment Strategy Matrix")
     seg_s = df_pred.groupby(['Edu_Label','Inc_Band'], observed=True).agg(n=('ID','count'), rate=('Personal Loan','mean'), score=('pred_proba','mean'), conv=('Personal Loan','sum')).reset_index()
     seg_s['Strategy'] = seg_s['score'].apply(lambda s: '🟢 Priority — RM Outreach' if s>0.5 else ('🟡 Strong — Digital Campaign' if s>0.1 else ('🟠 Low — Nurture' if s>0.01 else '🔴 Skip — Zero ROI')))
+    seg_s = seg_s.sort_values('score', ascending=False)
     seg_s['Rate'] = seg_s['rate'].apply(lambda x: f"{x:.1%}")
     seg_s['Score'] = seg_s['score'].apply(lambda x: f"{x:.3f}")
-    display = seg_s[['Edu_Label','Inc_Band','n','Rate','Score','conv','Strategy']].sort_values('score', ascending=False).drop(columns='score')
+    display = seg_s[['Edu_Label','Inc_Band','n','Rate','Score','conv','Strategy']].copy()
     display.columns = ['Education','Income','Customers','Actual Rate','Model Score','Conversions','Strategy']
     st.dataframe(display, use_container_width=True, hide_index=True, height=440)
 
